@@ -1,0 +1,21 @@
+{
+  "name": "bycord",
+  "version": "1.0.0",
+  "description": "A bybit integration for monitoring your Spot/Derivatives accounts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "-"
+  },
+  "keywords": [
+    "Bybit"
+  ],
+  "author": "FrimeX#6701",
+  "license": "MIT",
+  "dependencies": {
+    "@pxtrn/bybit-api": "^1.1.5"
+  }
+}

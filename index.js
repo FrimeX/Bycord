@@ -1,109 +1,47 @@
-const { Plugin } = require('powercord/entities')
+const { Plugin } = require('powercord/entities');
+const { uninject, inject } = require('../../../../injectors/main');
 
-module.exports = class AudioViz extends Plugin {
-  startPlugin () {
-    setTimeout(() => {
-      this.intervals = []
-      this.startVisualizer()
-      this.loadStylesheet('style.scss')
-    }, 0)
+const Settings = require('./components/Settings');
+const App = require('./components/Settings');
+module.exports = class Bycord extends Plugin {
+  async startPlugin () {
+      inject('Bycord');
+      powercord.api.settings.registerSettings(this.entityID, {
+        category: this.entityID,
+        label: 'Bycord',
+        render: Settings,
+      });
+      this.startVisualizer();
   }
 
   reload () {
-    this.stopVisualizer()
-    this.startVisualizer()
+    uninject('Bycord');
+    inject('Bycord');
   }
 
-  pluginWillUnload() {
-    this.stopVisualizer()
+  pluginWillUnload () {
+    uninject('Bycord');
   }
 
   stopVisualizer () {
-      clearInterval(this.interval)
-      cancelAnimationFrame(this.frame)
-      const filter = document.getElementById('vp-audioviz-goo');
-      const viz = document.getElementById('vp-audioviz-visualizer');
-      filter.parentNode.removeChild(filter);
-      viz.parentNode.removeChild(viz);
   }
 
-  startVisualizer () {
-    const { desktopCapturer } = require('electron')
-    desktopCapturer.getSources({ types: ['window', 'screen'] }).then(async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          mandatory: {
-            chromeMediaSource: 'desktop'
-          }
-        },
-        video: {
-          mandatory: {
-            chromeMediaSource: 'desktop'
-          }
-        }
+  async startVisualizer () {
+    const {RestClient} = require('@pxtrn/bybit-api');
+    const client = new RestClient(
+      "kVDlbxXNw9e84pwlEk",
+      "Gm7UOfJV2aWSPQSLUMmC6zpRJHuLKSjs6AD7",
+      true,
+      );
+    setTimeout(() => {
+      client.getWalletBalance({ coin: "BTC"})
+      .then( (result) => {
+          console.log("getOrderBook inverse result: ",  result);
       })
+      .catch(err => {
+          console.error("getOrderBook inverse error: ", err);
+      });
+    }, 10000);
 
-      const audioCtx = new AudioContext()
-      const audio = audioCtx.createMediaStreamSource(stream)
-      const easeInOutCubic = t => t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1
-      const barCount = 20
-
-      const analyser = audioCtx.createAnalyser()
-      audio.connect(analyser)
-      analyser.fftSize = 1024
-      let accountContainer
-      let visualizer = document.createElement('div')
-      visualizer.classList.add('vp-audioviz-visualizer')
-      visualizer.id = 'vp-audioviz-visualizer'
-      for (let i = 0; i < barCount; i++) {
-        let bar = document.createElement('div')
-        bar.classList.add('vp-audioviz-bar')
-        bar.style.height = "1px";
-        visualizer.appendChild(bar)
-      }
-      const visualizerGoo = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-      visualizerGoo.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', 'http://www.w3.org/2000/svg')
-      visualizerGoo.setAttributeNS('http://www.w3.org/2000/version/', 'version', '1.1')
-      visualizerGoo.classList.add('vp-audioviz-goo')
-      visualizerGoo.id = 'vp-audioviz-goo'
-      visualizerGoo.innerHTML = `
-        <filter id="vpVisualizerGoo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"></feGaussianBlur>
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="vpVisualizerGoo"></feColorMatrix>
-          <feComposite in="SourceGraphic" in2="vpVisualizerGoo" operator="atop"></feComposite>
-        </filter>
-      `
-
-      const findElement = setInterval(() => {
-        if (accountContainer) {
-          visualizer = document.querySelector('.vp-audioviz-visualizer')
-        } else {
-          accountContainer = document.querySelector('.panels-j1Uci_ > .container-3baos1:last-child')
-          if (accountContainer) {
-            accountContainer.prepend(visualizer)
-            accountContainer.prepend(visualizerGoo)
-          }
-        }
-      }, 1000)
-      const func = () => {
-        if (!visualizer) return
-        const bufferLength = analyser.frequencyBinCount
-        const dataArray = new Uint8Array(bufferLength)
-        analyser.getByteFrequencyData(dataArray)
-
-        for (let i = 0; i < barCount; i++) {
-          const y = dataArray[i * 2]
-          const height = easeInOutCubic(Math.min(1, y / 255)) * 100
-          const bar = visualizer.children[i]
-          bar.style.transform = `scale(1, ${height})`;
-        }
-        requestAnimationFrame(func)
-      }
-      const style = requestAnimationFrame(func)
-      this.interval = findElement;
-      this.frame = style
-    }).catch(error => {
-      console.error('An error occurred getting media sources', error)
-    })
   }
-}
+};

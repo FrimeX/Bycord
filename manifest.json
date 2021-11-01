@@ -1,8 +1,8 @@
 {
-  "name": "AudioViz",
+  "name": "Bycord",
   "version": "1.0.0",
-  "description": "Audio visualizer",
-  "author": "Vap0r1ze#0126",
+  "description": "A bybit integration for monitoring your Spot/Derivatives accounts",
+  "author": "FrimeX#6701",
   "license": "MIT",
   "permissions": [ "use_eud" ]
 }
