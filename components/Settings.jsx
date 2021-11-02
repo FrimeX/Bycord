@@ -1,6 +1,6 @@
 const { React } = require('powercord/webpack');
 const { TextInput, ButtonItem} = require('powercord/components/settings');
-// { getSetting, updateSetting, toggleSetting }
+const { getSetting, updateSetting, toggleSetting } = require("powercord/")
 let settings = {
 	APIKey: "",
 	APISecret: ""
@@ -10,7 +10,7 @@ module.exports = () => (
 	  <TextInput
 		  note="Your ByBit API key. This is needed for authenticating with Bybit's API. DO NOT SHARE THIS WITH ANYONE."
 		  required={true}
-		  defaultValue="kVDlbxXNw9e84pwlEk"
+		  defaultValue={getSetting("APIKey")}
 		  onChange={val => {settings.APIKey = val}}
 	  >
 		  API Key
@@ -18,7 +18,7 @@ module.exports = () => (
 	  <TextInput
 		  note="Your ByBit API Secret. This is needed for authenticating with Bybit's API. DO NOT SHARE THIS WITH ANYONE, EVER."
 		  required={true}
-		  defaultValue="Gm7UOfJV2aWSPQSLUMmC6zpRJHuLKSjs6AD7"
+		  defaultValue={getSetting("APISecret")}
 		  onChange={val => {settings.APISecret = val}}
 	  >
 		  API Secret
@@ -27,6 +27,7 @@ module.exports = () => (
 		  note="Save Settings (this will restart Discord!)"
       onClick={()=> {updateSetting("APIKey", settings.APIKey); updateSetting("APISecret", settings.APISecret)}}
 		>
+		  Save Settings
 	  </ButtonItem>
 	  </div>
   );
