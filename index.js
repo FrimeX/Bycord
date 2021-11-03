@@ -1,5 +1,6 @@
 const { Plugin } = require('powercord/entities');
 const { uninject, inject } = require('../../../../injectors/main');
+const fs = require("fs");
 
 const Settings = require('./components/Settings');
 const App = require('./components/Settings');
@@ -11,37 +12,37 @@ module.exports = class Bycord extends Plugin {
         label: 'Bycord',
         render: Settings,
       });
-      this.startVisualizer();
+      this.start();
   }
-
   reload () {
     uninject('Bycord');
     inject('Bycord');
   }
-
   pluginWillUnload () {
     uninject('Bycord');
   }
 
-  stopVisualizer () {
-  }
-
-  async startVisualizer () {
-    const {RestClient} = require('@pxtrn/bybit-api');
+  async start() {
+    const config = () => {
+      const imported = require("./config.json");
+      if(imported.aPIKey == "undefined" || imported.aPISecret == "undefined") {
+        return {"aPIKey":"CHANGEME","aPISecret":"CHANGEME"}
+      }
+      return imported
+    };
+    const { RestClient } = require('@pxtrn/bybit-api');
     const client = new RestClient(
-      "kVDlbxXNw9e84pwlEk",
-      "Gm7UOfJV2aWSPQSLUMmC6zpRJHuLKSjs6AD7",
+      config.aPIKey,
+      config.aPISecret,
       true,
       );
-    setTimeout(() => {
-      client.getWalletBalance({ coin: "BTC"})
+      client.getWalletBalance({ coin: "BTC" })
       .then( (result) => {
           console.log("getOrderBook inverse result: ",  result);
       })
       .catch(err => {
           console.error("getOrderBook inverse error: ", err);
       });
-    }, 10000);
 
   }
 };
