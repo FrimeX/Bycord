@@ -1,4 +1,5 @@
 {
  "aPIKey": "placeholder",
- "aPISecret": "placeholder"   
+ "aPISecret": "placeholder",
+ "currencies": ["BTC", "ETH", "XRP"]
 }

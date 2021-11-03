@@ -19,7 +19,7 @@ module.exports = () => (
 		  API Secret
 	  </TextInput>
 	  <ButtonItem
-		  note="Save Settings (this will restart Discord!)"
+		  note="Save Settings (this will restart Discord! YOU CAN ONLY SET THIS ONE TIME!)"
       onClick={()=> {}}
 		>
 		  Save Settings

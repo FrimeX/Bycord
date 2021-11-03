@@ -26,7 +26,7 @@ module.exports = class Bycord extends Plugin {
     const config = () => {
       const imported = require("./config.json");
       if(imported.aPIKey == "undefined" || imported.aPISecret == "undefined") {
-        return {"aPIKey":"CHANGEME","aPISecret":"CHANGEME"}
+        return {"aPIKey":"CHANGEME","aPISecret":"CHANGEME", "currencies": ["BTC"]}
       }
       return imported
     };
@@ -35,14 +35,17 @@ module.exports = class Bycord extends Plugin {
       config.aPIKey,
       config.aPISecret,
       true,
-      );
-      client.getWalletBalance({ coin: "BTC" })
+    );
+    switch(config.currencies.length) {
+    case(1):
+      client.getWalletBalance({ coin: config.currencies[0] })
       .then( (result) => {
-          console.log("getOrderBook inverse result: ",  result);
+        console.log("getOrderBook inverse result: ",  result);
       })
       .catch(err => {
-          console.error("getOrderBook inverse error: ", err);
+        console.error("getOrderBook inverse error: ", err);
       });
-
+    case()
+    }
   }
 };
