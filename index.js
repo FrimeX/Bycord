@@ -1,6 +1,7 @@
 const { Plugin } = require('powercord/entities');
 const { uninject, inject } = require('../../../../injectors/main');
 const fs = require("fs");
+const { RestClient } = require('@pxtrn/bybit-api');
 
 const Settings = require('./components/Settings');
 const App = require('./components/Settings');
@@ -30,7 +31,6 @@ module.exports = class Bycord extends Plugin {
       }
       return imported
     };
-    const { RestClient } = require('@pxtrn/bybit-api');
     const client = new RestClient(
       config.aPIKey,
       config.aPISecret,
@@ -40,12 +40,19 @@ module.exports = class Bycord extends Plugin {
     case(1):
       client.getWalletBalance({ coin: config.currencies[0] })
       .then( (result) => {
-        console.log("getOrderBook inverse result: ",  result);
+        console.log(`Balance(${config.currencies[0]}) result: `,  result);
       })
       .catch(err => {
-        console.error("getOrderBook inverse error: ", err);
+        console.error(`Balance(${config.currencies[0]}) error: `, err);
       });
-    case()
+    default: 
+      client.getWalletBalance({ coin: "BTC" })
+      .then( (result) => {
+        console.log("Balance(BTC) result: ",  result);
+      })
+      .catch(err => {
+        console.error("Balance(BTC) error: ", err);
+      });
     }
   }
 };
